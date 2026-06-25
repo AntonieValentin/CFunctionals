@@ -1,51 +1,62 @@
-# Checker
+# C Functionals
 
-This checker is in it's first iteration. If you found any bugs and have features you
-would like me to add, or any QoL ideas, contact me and I'll try to implement them
-as soon as I can.
+This project implements a small functional-style utility layer in C, built on top of generic homogeneous arrays. The goal is to recreate common higher-order operations such as `map`, `filter`, `reduce`, and `for_each`, while still working with manual memory management and `void *` data.
 
-What's different from all the other checkers out there is that it uses a GUI instead
-of the old-school text based printing of results. It can run any test individually,
-it shows a diff of all the results and most importantly it will run more
-tasks at the same time.
+The project is a good exercise in generic programming in C, function pointers, variadic functions, and disciplined ownership of dynamically allocated memory.
 
-**For this checker to run at max capacity, we recommend allocating more CPU cores
-to your virtual machine.**
+## Core Idea
 
-![alt-text](https://i.imgur.com/3uqwCvs.png)
+The main data structure is `array_t`, a generic list-like container that stores:
 
-## How to use the checker
+* a pointer to a contiguous memory block;
+* the size of one element;
+* the number of elements;
+* an optional destructor for freeing complex elements.
 
-Run the by using either one of these commands. You must be in the same directory
-as the other checker files, otherwise it won't work. For this checker to work,
-you will need a terminal of at least 52x24 (width x height).
+Using this structure, the project simulates functional lists while keeping the implementation close to how memory actually works in C.
 
-```bash
-$ ./check
+## Implemented Functionals
 
-$ hw_checker
+The project includes the basic functional operations:
 
-# If you only want to use the text only version, add the following flag to the command
+* `for_each` - applies a function to every element;
+* `map` - builds a new list from an existing one;
+* `filter` - keeps only the elements that satisfy a condition;
+* `reduce` - folds a list into an accumulator.
 
-$ ./check --legacy
+It also includes versions that work on multiple lists at the same time:
+
+* `for_each_multiple`;
+* `map_multiple`;
+* `reduce_multiple`.
+
+These variants use variadic functions and process the input lists in parallel, stopping at the length of the shortest list.
+
+## Practice Tasks
+
+The functional utilities are then used to solve several tasks, such as:
+
+* reversing a list of integers;
+* creating a list of structured numbers from integer and fractional parts;
+* extracting the names of students who passed;
+* checking sums against expected values;
+* keeping strings from even indexes;
+* generating a square matrix represented as a list of lists.
+
+The tasks are meant to be solved using the implemented functionals, not with regular loops inside the task logic.
+
+## Build and Run
+
+The project can be built using the Makefile setup.
+
+A typical local workflow is:
+
+```bash id="buuvgs"
+make
 ```
 
-## Keybinds
+## Notes
 
-To simplify the use of the checker, you can use the following keybinds:
+Most of the difficulty comes from combining a functional programming style with C's low-level memory model. Functions like `map` and `filter` create new arrays and free old ones when required, so ownership rules are an important part of the implementation.
 
-- `enter` - when on a test, to run it
-- `left-arrow` or `right-arrow` - switch from test window to log window
-- `r` - runs all the tests from both tasks
-- `f` - runs only the failed tasks that either have crashed or they got 0 points
-- `v` - enables or disables valgrind globally for the tests (valgrind is enabled
-when the `Tests` window is highlighted in red)
-- `c` - runs the coding style checker and shows a pop-up showing all the possible problems
-- `ctrl+c` or `q` - exit the program
-
-## Source code
-
-You can find the source code [here](https://github.com/RobertGrancsa/checker) 
-and the [crates.io](https://crates.io/crates/checker-tema-3-sd) page here.
-If you would like to contribute to the project, or open any issues, you are welcomed
-to help.
+The project avoids global variables and keeps the task solutions based on the reusable functional operations.
